@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+category = 3
+display_name = "M870 Shotgun"
+damage = 12
+fire_rate = 1.2
+magazine_size = 7
+reserve_ammo = 35
+reload_time = 2.6
+spread_rad = 0.055
+ads_spread_rad = 0.03
+recoil_kick = 0.16
+recoil_yaw = 0.01
+range_m = 30
+pellets = 8
+headshot_mult = 1.5
+auto = false
+body_color = Color(0.20, 0.13, 0.08, 1)
+body_scale = Vector3(0.06, 0.10, 0.62)
+barrel_scale = Vector3(0.03, 0.03, 0.42)
+mag_scale = Vector3(0.04, 0.09, 0.06)
+shot_sound = "res://assets/audio/weapons/shotgun_01.wav"
+ads_zoom = 0.9

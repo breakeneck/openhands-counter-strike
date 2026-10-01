@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+category = 4
+display_name = "AWM Sniper"
+damage = 95
+fire_rate = 0.9
+magazine_size = 5
+reserve_ammo = 25
+reload_time = 3.4
+spread_rad = 0.02
+ads_spread_rad = 0.0002
+recoil_kick = 0.2
+recoil_yaw = 0.005
+range_m = 200
+pellets = 1
+headshot_mult = 2.5
+auto = false
+body_color = Color(0.15, 0.22, 0.15, 1)
+body_scale = Vector3(0.055, 0.10, 0.75)
+barrel_scale = Vector3(0.026, 0.026, 0.5)
+mag_scale = Vector3(0.04, 0.10, 0.06)
+shot_sound = "res://assets/audio/weapons/sniper_01.wav"
+ads_zoom = 0.35

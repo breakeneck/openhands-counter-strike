@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+category = 0
+display_name = "P9 Pistol"
+damage = 24
+fire_rate = 5.5
+magazine_size = 15
+reserve_ammo = 75
+reload_time = 1.5
+spread_rad = 0.012
+ads_spread_rad = 0.003
+recoil_kick = 0.055
+recoil_yaw = 0.008
+range_m = 60
+pellets = 1
+headshot_mult = 2.2
+auto = false
+body_color = Color(0.25, 0.25, 0.28, 1)
+body_scale = Vector3(0.055, 0.09, 0.28)
+barrel_scale = Vector3(0.02, 0.02, 0.16)
+mag_scale = Vector3(0.035, 0.10, 0.05)
+shot_sound = "res://assets/audio/weapons/pistol_01.wav"
+ads_zoom = 0.92
