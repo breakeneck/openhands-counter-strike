@@ -79,12 +79,12 @@ func _build_environment() -> void:
 	sky.sky_material = proc
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.7
+	env.ambient_light_energy = 0.85
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.8, 0.75, 0.65)
 	env.fog_density = 0.006
 	env.volumetric_fog_enabled = true
-	env.volumetric_fog_density = 0.012
+	env.volumetric_fog_density = 0.004
 	env.volumetric_fog_albedo = Color(0.8, 0.78, 0.72)
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 1.05
@@ -155,7 +155,8 @@ func _build_buildings() -> void:
 	# windows (visual): dark inset quads
 	_window(Vector3(ax, h - 2.0, az + 8.05), Vector2(4, 2))
 	_window(Vector3(ax - 10.05, h - 2.0, az), Vector2(4, 2), true)
-	_omni(Vector3(ax, h - 1.0, az), Color(1, 0.85, 0.6), 0.8, 12)
+	_omni(Vector3(ax, h - 1.0, az), Color(1, 0.85, 0.6), 1.6, 16)
+	_omni(Vector3(ax + 5, h - 1.0, az - 3), Color(1, 0.9, 0.7), 1.0, 12)
 
 	# === Building B (NE): warehouse, big doors, catwalk anchor ===
 	var bx := 26.0; var bz := 12.0
@@ -183,7 +184,7 @@ func _build_buildings() -> void:
 	_wall([cx+7, cz-6, cx+7, cz-1, 4.5, t], "concrete")
 	_wall([cx+7, cz+2, cx+7, cz+6, 4.5, t], "concrete")    # back door gap
 	_box(Vector3(cx, 4.65, cz), Vector3(14.6, 0.3, 12.6), "roof_gravel", ["world"])
-	_omni(Vector3(cx, 3.5, cz), Color(1, 0.9, 0.7), 0.7, 10)
+	_omni(Vector3(cx, 3.5, cz), Color(1, 0.9, 0.7), 1.4, 14)
 	# awning
 	_box(Vector3(cx, 3.2, cz + 7.5), Vector3(10, 0.15, 3), "metal", ["world"])
 
