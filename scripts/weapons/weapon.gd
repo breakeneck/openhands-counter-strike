@@ -103,15 +103,24 @@ func _raycast_hit(dir: Vector3) -> void:
 		var hit_point: Vector3 = hit["position"]
 		var normal: Vector3 = hit["normal"]
 		var collider = hit["collider"]
-		# damage
+		# damage — hit zones: head = instant kill, chest = full, limbs = reduced
 		var dmg := data.damage
 		var is_head := false
+		var zone := "body"
 		if collider.is_in_group("enemy"):
+			var rel_y: float = hit_point.y - collider.global_position.y
 			var head_area: Node = collider.get_node_or_null("HeadArea")
-			if head_area and head_area.has_method("point_in_head"):
-				if head_area.point_in_head(hit_point):
-					dmg *= data.headshot_mult
-					is_head = true
+			var head_hit: bool = head_area and head_area.has_method("point_in_head") and head_area.point_in_head(hit_point)
+			if head_hit or rel_y > 1.42:
+				is_head = true
+				zone = "head"
+				dmg = 1000  # CS-style: headshot kills outright
+			elif rel_y < 0.55:
+				zone = "legs"
+				dmg = int(dmg * 0.6)
+			elif rel_y > 1.15:
+				zone = "arms"
+				dmg = int(dmg * 0.85)
 			if collider.has_method("take_damage"):
 				collider.take_damage(int(dmg), global_position)
 			Effects.spawn_blood_splat(hit_point, is_head)

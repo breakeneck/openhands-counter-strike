@@ -25,8 +25,7 @@ if [[ "$SKIP_UPDATE" != "1" ]] && git -C "$SCRIPT_DIR" rev-parse --git-dir >/dev
 		if git -C "$SCRIPT_DIR" pull --ff-only --quiet 2>/dev/null; then
 			after=$(git -C "$SCRIPT_DIR" rev-parse HEAD)
 			if [[ "$before" != "$after" ]]; then
-				echo "[run] updated $(git -C "$SCRIPT_DIR" rev-parse --short "$before") -> $(git -C "$SCRIPT_DIR" rev-parse --short "$after"); re-importing assets..."
-				"$GODOT" --headless --path "$SCRIPT_DIR" --import >/dev/null 2>&1 || true
+				echo "[run] updated $(git -C "$SCRIPT_DIR" rev-parse --short "$before") -> $(git -C "$SCRIPT_DIR" rev-parse --short "$after")"
 			else
 				echo "[run] up to date"
 			fi
@@ -37,5 +36,9 @@ if [[ "$SKIP_UPDATE" != "1" ]] && git -C "$SCRIPT_DIR" rev-parse --git-dir >/dev
 		echo "[run] local changes present — skipping update"
 	fi
 fi
+
+# Always ensure imports are current (incremental — fast when nothing changed).
+# Fixes stale .godot/imported caches after asset updates (e.g. "Failed loading resource ... pistol_01.wav").
+"$GODOT" --headless --path "$SCRIPT_DIR" --import >/dev/null 2>&1 || true
 
 exec "$GODOT" --path "$SCRIPT_DIR" --rendering-driver vulkan "${GODOT_ARGS[@]+"${GODOT_ARGS[@]}"}"

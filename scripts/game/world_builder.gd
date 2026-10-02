@@ -31,7 +31,12 @@ func _build_materials() -> void:
 			tex_path = TEX_DIR + t + ".png"
 		if ResourceLoader.exists(tex_path):
 			m.albedo_texture = load(tex_path)
-			m.uv1_scale = Vector3(0.25, 0.25, 0.25)
+			# world-space triplanar UV: texture repeats in world meters,
+			# so big ground slabs don't stretch the texture ("swimming")
+			m.uv1_triplanar = true
+			m.uv1_normal_lerp = true
+			var tiling := {"grass": 0.5, "sand": 0.4, "asphalt": 0.3, "concrete_floor": 0.25}
+			m.uv1_scale = Vector3.ONE * tiling.get(t, 0.25)
 			var npath := TEX_DIR + t + "_n.jpg"
 			if not ResourceLoader.exists(npath):
 				npath = TEX_DIR + t + "_n.png"
@@ -79,12 +84,19 @@ func _build_environment() -> void:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_SKY
 	var sky := Sky.new()
-	var proc := ProceduralSkyMaterial.new()
-	proc.sky_top_color = Color(0.35, 0.5, 0.7)
-	proc.sky_horizon_color = Color(0.75, 0.68, 0.55)
-	proc.ground_bottom_color = Color(0.2, 0.18, 0.16)
-	proc.ground_horizon_color = Color(0.75, 0.68, 0.55)
-	sky.sky_material = proc
+	var hdr_path := "res://assets/sky/sky_quarry.hdr"
+	if ResourceLoader.exists(hdr_path):
+		var pano := PanoramaSkyMaterial.new()
+		pano.panorama = load(hdr_path)
+		sky.sky_material = pano
+		sky.radiance_size = Sky.RADIANCE_SIZE_128
+	else:
+		var proc := ProceduralSkyMaterial.new()
+		proc.sky_top_color = Color(0.35, 0.5, 0.7)
+		proc.sky_horizon_color = Color(0.75, 0.68, 0.55)
+		proc.ground_bottom_color = Color(0.2, 0.18, 0.16)
+		proc.ground_horizon_color = Color(0.75, 0.68, 0.55)
+		sky.sky_material = proc
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 	env.ambient_light_energy = 0.85

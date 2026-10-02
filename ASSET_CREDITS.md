@@ -44,6 +44,7 @@ https://polyhaven.com — all CC0 public domain dedications.
 
 - Textures renamed to semantic names; used as albedo/normal/AO-rough mixes.
 - grass.jpg / grass_n.jpg / grass_arm.jpg — Poly Haven "Grass Ground" (CC0), downloaded 2026-10-02.
+- assets/sky/sky_quarry.hdr — Poly Haven "Quarry 01 PureSky" HDRI (CC0), downloaded 2026-10-02.
 - rocket_launcher_01.ogg reused as machine-gun layer sound.
 - Weapon viewmodels are procedural geometry (original).
 - Map layout, gameplay code, UI: original work.

@@ -257,7 +257,10 @@ func _fire_at(player: Node) -> void:
 	shot_player.volume_db = randf_range(-10.0, -6.0)
 	shot_player.play()
 	var from := gun_tip.global_position
-	var to: Vector3 = player.global_position + Vector3(0, 1.1, 0) + Vector3(randf_range(-1,1)*accuracy*20, randf_range(-1,1)*accuracy*20, randf_range(-1,1)*accuracy*20)
+	var dist: float = global_position.distance_to(player.global_position)
+	# aim at chest with distance-scaled spread (close = deadly, far = suppressive)
+	var spread: float = clampf(accuracy * dist * 0.12, 0.08, 1.2)
+	var to: Vector3 = player.global_position + Vector3(0, 1.1, 0) + Vector3(randf_range(-1,1)*spread, randf_range(-1,1)*spread*0.6, randf_range(-1,1)*spread)
 	var space := get_world_3d().direct_space_state
 	var q := PhysicsRayQueryParameters3D.create(from, to)
 	q.exclude = [get_rid()]
