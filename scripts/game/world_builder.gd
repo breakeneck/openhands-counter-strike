@@ -242,6 +242,42 @@ func _ramp(base: Vector3, top_h: float, length: float, width: float, tex: String
 	_box(base + Vector3(0, top_h * 0.25, -length * 0.9), Vector3(width, top_h * 0.5, 0.3), tex, ["world"])
 
 # ---------- containers & props ----------
+var _prop_cache := {}
+
+func _prop(gltf_path: String, pos: Vector3, groups: PackedStringArray = PackedStringArray(), y_rot: float = 0.0, scale: float = 1.0) -> void:
+	var ps: PackedScene = _prop_cache.get(gltf_path)
+	if ps == null:
+		ps = load(gltf_path)
+		if ps == null:
+			return
+		_prop_cache[gltf_path] = ps
+	var sb := StaticBody3D.new()
+	sb.collision_layer = 1
+	sb.collision_mask = 0
+	var inst := ps.instantiate()
+	sb.add_child(inst)
+	inst.scale = Vector3.ONE * scale
+	# collision box from merged mesh AABB
+	var aabb := AABB()
+	var stack: Array = [inst]
+	while not stack.is_empty():
+		var c: Node = stack.pop_back()
+		for ch in c.get_children():
+			stack.append(ch)
+		if c is MeshInstance3D:
+			aabb = aabb.merge((c as MeshInstance3D).get_aabb())
+	var cs := CollisionShape3D.new()
+	var bs := BoxShape3D.new()
+	bs.size = aabb.size * scale
+	cs.shape = bs
+	cs.position = aabb.get_center() * scale
+	sb.add_child(cs)
+	add_child(sb)
+	sb.global_position = pos
+	sb.rotation.y = y_rot
+	for g in groups:
+		sb.add_to_group(g)
+
 func _build_containers_and_props() -> void:
 	# shipping containers — mid lane cover
 	_box(Vector3(-4, 1.75, 18), Vector3(6, 3.5, 2.8), "metal", ["world", "cover"], PI / 2)
@@ -257,33 +293,30 @@ func _build_containers_and_props() -> void:
 	for s in crate_spots:
 		_box(s, Vector3(1.4, 1.4, 1.4), "wood_crate", ["world", "cover", "wood"])
 		_box(s + Vector3(1.3, -0.1, 0.4), Vector3(1.0, 1.2, 1.0), "wood_pallet", ["world", "cover", "wood"])
-	var barrel_spots := [Vector3(-11, 0.6, -2), Vector3(11.5, 0.6, 12), Vector3(-18, 0.6, 20), Vector3(20, 0.6, 36), Vector3(-34, 0.6, -20), Vector3(34, 0.6, -12)]
+	var barrel_spots := [Vector3(-11, 0, -2), Vector3(11.5, 0, 12), Vector3(-18, 0, 20), Vector3(20, 0, 36), Vector3(-34, 0, -20), Vector3(34, 0, -12), Vector3(26, 0, -22), Vector3(-6, 0, -30)]
 	for s in barrel_spots:
-		var sb := StaticBody3D.new()
-		sb.collision_layer = 1
-		sb.collision_mask = 0
-		var mi := MeshInstance3D.new()
-		var cm := CylinderMesh.new()
-		cm.top_radius = 0.45; cm.bottom_radius = 0.45; cm.height = 1.2
-		mi.mesh = cm
-		mi.material_override = _mat("metal_rust")
-		sb.add_child(mi)
-		var cs := CollisionShape3D.new()
-		var cyl := CylinderShape3D.new()
-		cyl.radius = 0.45; cyl.height = 1.2
-		cs.shape = cyl
-		sb.add_child(cs)
-		_geo_root.add_child(sb)
-		sb.global_position = s
-		sb.add_to_group("world"); sb.add_to_group("cover"); sb.add_to_group("metal")
+		_prop("res://assets/models/barrel_03/barrel_03_1k.gltf", s, ["world", "cover", "metal"], randf() * PI)
+	# jerrycans & propane near crates
+	for s in [Vector3(-12.4, 0, 5.2), Vector3(12.8, 0, 6.8), Vector3(-19.2, 0, -11), Vector3(31, 0, 2.6)]:
+		_prop("res://assets/models/metal_jerrycan/metal_jerrycan_1k.gltf", s, ["world", "metal"], randf() * PI, 1.6)
+	for s in [Vector3(-25, 0, -35), Vector3(29, 0, 8)]:
+		_prop("res://assets/models/propane_tank/propane_tank_1k.gltf", s, ["world", "metal"], randf() * PI, 1.8)
+	# generators
+	_prop("res://assets/models/portable_generator/portable_generator_1k.gltf", Vector3(-30, 0, 12), ["world", "cover"], 0.8, 1.6)
+	_prop("res://assets/models/portable_generator/portable_generator_1k.gltf", Vector3(33, 0, -34), ["world", "cover"], 2.4, 1.6)
+	# tyres
+	for s in [Vector3(-9.5, 0.3, -44.5), Vector3(41, 0.3, -29), Vector3(-33, 0.3, 27)]:
+		_prop("res://assets/models/old_tyre/old_tyre_1k.gltf", s, ["world"], randf() * PI, 1.3)
+	# hydrants on sidewalks
+	_prop("res://assets/models/fire_hydrant/fire_hydrant_1k.gltf", Vector3(-9.5, 0.15, 26), ["world"], 0.0, 1.2)
+	_prop("res://assets/models/fire_hydrant/fire_hydrant_1k.gltf", Vector3(9.5, 0.15, -22), ["world"], 0.0, 1.2)
 	# low walls / jersey barriers for cover lanes
 	for i in 6:
-		_box(Vector3(-6 + (i % 2) * 12, 0.55, -6 + i * 9), Vector3(3, 1.1, 0.8), "concrete", ["world", "cover"], PI / 2 if i % 3 == 0 else 0)
+		_prop("res://assets/models/concrete_road_barrier/concrete_road_barrier_1k.gltf", Vector3(-6 + (i % 2) * 12, 0, -6 + i * 9), ["world", "cover"], PI / 2 if i % 3 == 0 else 0, 1.5)
 	# street lamps (props + light)
 	for p in [Vector3(-10, 0, 20), Vector3(10, 0, -10), Vector3(-10, 0, -30), Vector3(10, 0, 40)]:
-		_box(p + Vector3(0, 3, 0), Vector3(0.2, 6, 0.2), "metal_rust", ["world"])
-		_box(p + Vector3(0, 6, 0.6), Vector3(0.5, 0.2, 1.4), "metal", ["world"])
-		_omni(p + Vector3(0, 5.6, 1.0), Color(1, 0.85, 0.55), 0.5, 10)
+		_prop("res://assets/models/street_lamp_01/street_lamp_01_1k.gltf", p, ["world"], 0.0 if p.x < 0 else PI)
+		_omni(p + Vector3(0, 3.6, 0.9 if p.x < 0 else -0.9), Color(1, 0.85, 0.55), 0.6, 12)
 
 # ---------- verticality ----------
 func _build_verticality() -> void:
