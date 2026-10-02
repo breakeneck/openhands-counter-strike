@@ -12,14 +12,30 @@ extends CanvasLayer
 @onready var damage_dir: Control = $DamageDir
 @onready var hit_flash: ColorRect = $HitFlash
 @onready var interact_hint: Label = $Root/CenterHint/InteractHint
+@onready var hitmarker: Control = $Root/HitMarker
+@onready var headshot_label: Label = $Root/HeadshotLabel
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	GameManager.damage_taken.connect(_on_damage)
 	GameManager.objective_progress.connect(_on_progress)
 	GameManager.enemies_remaining.connect(_on_enemies)
+	Effects.hitmarker.connect(_on_hitmarker)
 	capture_bar.value = 0
 	_on_enemies(get_tree().get_nodes_in_group("enemy").size())
+
+func _on_hitmarker(headshot: bool) -> void:
+	hitmarker.modulate = Color(1, 0.25, 0.2, 1.0) if headshot else Color(1, 1, 1, 1.0)
+	hitmarker.scale = Vector2(1.6, 1.6) if headshot else Vector2.ONE
+	hitmarker.modulate.a = 1.0
+	var tw := create_tween()
+	tw.tween_property(hitmarker, "modulate:a", 0.0, 0.35)
+	tw.parallel().tween_property(hitmarker, "scale", Vector2.ONE, 0.25)
+	if headshot:
+		headshot_label.modulate.a = 1.0
+		var tw2 := create_tween()
+		tw2.tween_interval(0.4)
+		tw2.tween_property(headshot_label, "modulate:a", 0.0, 0.6)
 
 func set_ammo(mag: int, reserve: int, wname: String) -> void:
 	ammo_label.text = "%d / %d" % [mag, reserve]

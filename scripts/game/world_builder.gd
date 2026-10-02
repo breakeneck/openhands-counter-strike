@@ -24,12 +24,20 @@ func _ready() -> void:
 
 # ---------- materials ----------
 func _build_materials() -> void:
-	for t: String in ["asphalt","concrete","concrete_floor","brick","brick2","metal","metal_rust","wood_crate","wood_pallet","roof_gravel","sand","tiles","roof_metal"]:
+	for t: String in ["asphalt","concrete","concrete_floor","brick","brick2","metal","metal_rust","wood_crate","wood_pallet","roof_gravel","sand","tiles","roof_metal","grass"]:
 		var m := StandardMaterial3D.new()
-		var tex_path := TEX_DIR + t + ".png"
+		var tex_path := TEX_DIR + t + ".jpg"
+		if not ResourceLoader.exists(tex_path):
+			tex_path = TEX_DIR + t + ".png"
 		if ResourceLoader.exists(tex_path):
 			m.albedo_texture = load(tex_path)
 			m.uv1_scale = Vector3(0.25, 0.25, 0.25)
+			var npath := TEX_DIR + t + "_n.jpg"
+			if not ResourceLoader.exists(npath):
+				npath = TEX_DIR + t + "_n.png"
+			if ResourceLoader.exists(npath):
+				m.normal_enabled = true
+				m.normal_texture = load(npath)
 			var rpath := TEX_DIR + t + "_r.png"
 			if ResourceLoader.exists(rpath):
 				m.roughness_texture = load(rpath)
@@ -111,7 +119,7 @@ func _omni(pos: Vector3, color: Color, energy: float, radius: float) -> void:
 
 # ---------- ground ----------
 func _build_ground_and_road() -> void:
-	_box(Vector3(0, -0.25, 0), Vector3(140, 0.5, 140), "sand", ["world"])
+	_box(Vector3(0, -0.25, 0), Vector3(140, 0.5, 140), "grass", ["world"])
 	# main road (mid lane) N-S
 	_box(Vector3(0, 0.02, 0), Vector3(14, 0.06, 120), "asphalt", ["world"])
 	# cross road E-W

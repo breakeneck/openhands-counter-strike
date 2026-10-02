@@ -72,7 +72,6 @@ func _select(idx: int) -> void:
 		w.visible = false
 	current = weapons[idx]
 	current.visible = true
-	current.start_reload() if false else null
 	_emit_ammo()
 	weapon_switched.emit(current.data.display_name)
 	var tw := create_tween()
@@ -81,7 +80,8 @@ func _select(idx: int) -> void:
 	tw.tween_callback(func(): _switching = false)
 
 func _emit_ammo() -> void:
-	current.ammo_changed.disconnect(_on_ammo) if current.ammo_changed.is_connected(_on_ammo) else null
+	if current.ammo_changed.is_connected(_on_ammo):
+		current.ammo_changed.disconnect(_on_ammo)
 	current.ammo_changed.connect(_on_ammo)
 	ammo_changed.emit(current.mag_ammo, current.reserve_ammo, current.data.display_name)
 

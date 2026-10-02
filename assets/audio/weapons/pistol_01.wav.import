@@ -3,12 +3,11 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://doyy0nru03nq3"
-path="res://.godot/imported/pistol_01.wav-6a9543491998c820e341440fab676da1.sample"
+valid=false
 
 [deps]
 
 source_file="res://assets/audio/weapons/pistol_01.wav"
-dest_files=["res://.godot/imported/pistol_01.wav-6a9543491998c820e341440fab676da1.sample"]
 
 [params]
 

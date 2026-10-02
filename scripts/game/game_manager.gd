@@ -27,6 +27,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 func start_game() -> void:
+	get_tree().paused = false
 	health = max_health
 	objective_captured = false
 	objective_held = false

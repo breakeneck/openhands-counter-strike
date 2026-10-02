@@ -124,6 +124,8 @@ func _physics_process(delta: float) -> void:
 
 	# animation by movement
 	var hspeed := Vector2(velocity.x, velocity.z).length()
+	# scale walk/run animation to actual speed so it doesn't look like moonwalking
+	anim_player.speed_scale = clampf(hspeed / 3.0, 0.6, 1.6)
 	if state in [S.ATTACK, S.TAKE_COVER, S.RETREAT]:
 		if hspeed > 0.5:
 			_play_anim("CharacterArmature|Run_Shoot")
@@ -306,8 +308,16 @@ func _move_toward(dest: Vector3, speed: float, delta: float) -> void:
 	dir.y = 0
 	if dir.length() > 0.2 and speed > 0:
 		dir = dir.normalized()
-	velocity.x = lerpf(velocity.x, dir.x * speed, 10.0 * delta)
-	velocity.z = lerpf(velocity.z, dir.z * speed, 10.0 * delta)
+		# slow down near the destination so bots stop instead of sliding
+		var eff_speed: float = speed
+		if global_position.distance_to(dest) < 2.5:
+			eff_speed = speed * clampf(global_position.distance_to(dest) / 2.5, 0.25, 1.0)
+		velocity.x = lerpf(velocity.x, dir.x * eff_speed, 6.0 * delta)
+		velocity.z = lerpf(velocity.z, dir.z * eff_speed, 6.0 * delta)
+	else:
+		# friction when idle — no ice-skating
+		velocity.x = lerpf(velocity.x, 0.0, 10.0 * delta)
+		velocity.z = lerpf(velocity.z, 0.0, 10.0 * delta)
 
 func _arrived(dest: Vector3) -> bool:
 	return global_position.distance_to(dest) < 1.5

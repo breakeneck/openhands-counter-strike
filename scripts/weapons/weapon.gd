@@ -114,6 +114,7 @@ func _raycast_hit(dir: Vector3) -> void:
 					is_head = true
 			if collider.has_method("take_damage"):
 				collider.take_damage(int(dmg), global_position)
+			Effects.spawn_blood_splat(hit_point, is_head)
 		elif collider.is_in_group("player") and collider.has_method("take_damage"):
 			collider.take_damage(int(dmg), global_position)
 		Effects.spawn_impact(hit_point, normal, collider)

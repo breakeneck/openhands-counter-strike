@@ -8,6 +8,8 @@ extends Node
 @onready var ambience: AudioStreamPlayer = $Ambience
 
 func _ready() -> void:
+	pause_menu.process_mode = Node.PROCESS_MODE_ALWAYS
+	end_screen.process_mode = Node.PROCESS_MODE_ALWAYS
 	ambience.stream = load("res://assets/audio/ambience/urban_loop_01.ogg")
 	ambience.volume_db = -14.0
 	ambience.play()
