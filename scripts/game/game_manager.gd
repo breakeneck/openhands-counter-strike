@@ -33,6 +33,7 @@ func start_game() -> void:
 	capture_progress = 0.0
 	kills = 0
 	round_time = 0.0
+	_stop_objective_alarm()
 	get_tree().change_scene_to_file("res://scenes/main/game.tscn")
 	_set_state(State.PLAYING)
 
@@ -67,16 +68,46 @@ func _process(delta: float) -> void:
 		if p.has_method("get_capture_distance") and p.get_capture_distance() < CAPTURE_RADIUS:
 			in_zone = true
 	if in_zone and not objective_captured:
+		if not objective_held:
+			_play_objective_alarm()
 		objective_held = true
 		capture_progress = clampf(capture_progress + delta / capture_time_needed, 0.0, 1.0)
 		objective_progress.emit(capture_progress)
 		if capture_progress >= 1.0:
 			objective_captured = true
 			_on_objective_captured()
-	elif objective_captured:
-		pass
+	elif objective_held and not in_zone and not objective_captured:
+		objective_held = false
+		_stop_objective_alarm()
+
+var _alarm_player: AudioStreamPlayer
+
+func _play_objective_alarm() -> void:
+	if _alarm_player:
+		return
+	_alarm_player = AudioStreamPlayer.new()
+	_alarm_player.stream = load("res://assets/audio/ui/bomb_alarm_loop_01.ogg")
+	_alarm_player.volume_db = -10.0
+	add_child(_alarm_player)
+	_alarm_player.play()
+
+func _stop_objective_alarm() -> void:
+	if _alarm_player:
+		_alarm_player.stop()
+		_alarm_player.queue_free()
+		_alarm_player = null
+
+func _play_beep() -> void:
+	var p := AudioStreamPlayer.new()
+	p.stream = load("res://assets/audio/ui/beep_01.wav")
+	p.volume_db = -4.0
+	add_child(p)
+	p.finished.connect(p.queue_free)
+	p.play()
 
 func _on_objective_captured() -> void:
+	_stop_objective_alarm()
+	_play_beep()
 	# remaining enemies become more aggressive, then victory once all dead or 15s hold
 	var remaining := get_tree().get_nodes_in_group("enemy")
 	if remaining.is_empty():
