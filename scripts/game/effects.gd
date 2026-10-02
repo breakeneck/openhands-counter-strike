@@ -82,9 +82,8 @@ func spawn_impact(point: Vector3, normal: Vector3, collider) -> void:
 	get_tree().create_timer(20.0).timeout.connect(d.queue_free)
 
 func _decal_basis(normal: Vector3) -> Basis:
-	var b := Basis()
-	b = b.looking_at(-normal, Vector3.UP)
-	return b
+	var up := Vector3.UP if absf(normal.dot(Vector3.UP)) < 0.95 else Vector3.FORWARD
+	return Basis().looking_at(-normal, up)
 
 func _quad(mat: StandardMaterial3D) -> Mesh:
 	var q := QuadMesh.new()

@@ -134,7 +134,10 @@ func take_damage(amount: int, from_pos: Vector3) -> void:
 		die()
 
 func die() -> void:
+	if dead:
+		return
 	dead = true
+	GameManager.player_died()
 	camera.fov = 60.0
 	var tw := create_tween()
 	tw.tween_property(camera, "rotation:z", 0.8, 1.2)

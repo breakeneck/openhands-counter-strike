@@ -46,6 +46,8 @@ func _ready() -> void:
 	shot_player.stream = _shot_stream
 	anim_player.speed_scale = 1.0
 	_play_anim("CharacterArmature|Idle_Gun")
+	# let the navmap bake/sync before first path query
+	await get_tree().create_timer(1.0).timeout
 	_pick_patrol_target()
 
 func _play_anim(a: String) -> void:
@@ -296,6 +298,8 @@ func _move_to(dest: Vector3, speed: float, delta: float) -> void:
 	_move_toward(dest, speed, delta)
 
 func _move_toward(dest: Vector3, speed: float, delta: float) -> void:
+	if not dest.is_finite():
+		return
 	nav.target_position = dest
 	var next := nav.get_next_path_position()
 	var dir := next - global_position
